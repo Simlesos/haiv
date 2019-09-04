@@ -1,0 +1,12 @@
+{
+  "extends": "@rapa/tsconfig/tsconfig.lib.json",
+  "compilerOptions": {
+    "isolatedModules": false,
+    "experimentalDecorators": true,
+    "module": "ES2015",
+    "declarationDir": "./lib/",
+    "declaration": true
+  },
+  "include": ["src", "typings"],
+  "exclude": ["dist", "example", "docs"]
+}

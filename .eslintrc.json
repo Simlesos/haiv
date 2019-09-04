@@ -1,0 +1,7 @@
+{
+  "extends": ["@rapa/eslint-config/eslint-config-common"],
+  "rules": {
+    "new-cap": ["error", { "capIsNew": false }],
+    "no-shadow": "off"
+  }
+}

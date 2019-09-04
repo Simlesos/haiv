@@ -1,0 +1,1 @@
+{"version":3,"file":"haiv.umd.js","sources":["../src/index.ts"],"sourcesContent":["export function foo() {\n  console.log('hello world!')\n}\n"],"names":[],"mappings":";;;;;;WAAgB,GAAG;MACjB,OAAO,CAAC,GAAG,CAAC,cAAc,CAAC,CAAA;EAC7B,CAAC;;;;;;;;;;;;"}

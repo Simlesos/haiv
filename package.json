@@ -1,0 +1,41 @@
+{
+  "name": "haiv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/exercise-dto.js",
+  "module": "dist/exercise-dto.es.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "dist",
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest --verbose",
+    "build": "rollup -c",
+    "prepublish": "npm run build"
+  },
+  "author": "zhiqiang@guanghe.tv",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@rapa/eslint-config": "^0.1.0",
+    "@rapa/prettier-config": "^0.0.3",
+    "@rapa/tsconfig": "^0.0.3",
+    "@types/jest": "^24.0.17",
+    "jest": "^24.8.0",
+    "prettier": "1.18.2",
+    "rollup": "^1.19.4",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.23.0",
+    "ts-jest": "^24.0.2",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.3"
+  }
+}

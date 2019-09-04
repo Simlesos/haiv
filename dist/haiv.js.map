@@ -1,0 +1,1 @@
+{"version":3,"file":"haiv.js","sources":["../src/index.ts"],"sourcesContent":["export function foo() {\n  console.log('hello world!')\n}\n"],"names":[],"mappings":";;;;SAAgB,GAAG;IACjB,OAAO,CAAC,GAAG,CAAC,cAAc,CAAC,CAAA;CAC5B;;;;"}

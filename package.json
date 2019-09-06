@@ -1,6 +1,6 @@
 {
   "name": "haiv",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "fetch & xhr interceptor",
   "main": "dist/haiv.js",
   "module": "dist/haiv.es.js",

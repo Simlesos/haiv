@@ -25,5 +25,6 @@ export default class XhrRequest {
       const val = this.headers[key]
       originSetRequestHeader.apply(this.xhr, [key, val])
     })
+    this.headers = {}
   }
 }

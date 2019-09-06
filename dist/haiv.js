@@ -165,6 +165,7 @@ class XhrRequest {
             const val = this.headers[key];
             originSetRequestHeader.apply(this.xhr, [key, val]);
         });
+        this.headers = {};
     }
 }
 
@@ -257,7 +258,7 @@ class Network extends Emitter {
     }
 }
 
-const VERSION = '1.1.0';
+const VERSION = '1.1.2';
 
 exports.VERSION = VERSION;
 exports.default = Network;

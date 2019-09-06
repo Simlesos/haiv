@@ -8,13 +8,25 @@
 ## Install
 
 ```sh
-npm install
+npm install --save haiv
 ```
 
 ## Run tests
 
 ```sh
 npm run test
+```
+
+## How to use
+```
+import Network from 'haiv'
+const request = new Network({
+    appId: string
+    header: Array<[string, string]>
+    signature: boolean
+    overrideFetch: boolean
+    overrideXhr: boolean
+})
 ```
 
 ## Author

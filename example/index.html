@@ -18,15 +18,21 @@
 
       const getMe = 'https://api-test.yangcong345.com/me'
 
-      // axios.get(
-      //  getMe
-      // ).then(data => {
-      //     console.log('axios:', data.data)
-      // })
+      axios.get(
+       getMe,
+          {
+              headers: {
+                  foo: 'aaaa'
+              }
 
-      fetch(getMe).then(data => {
-          console.log('fetch:', data.data)
+          }
+      ).then(data => {
+          console.log('axios:', data.data)
       })
+
+      // fetch(getMe).then(data => {
+      //     console.log('fetch:', data.data)
+      // })
 
       // $.ajax({ url: getMe}).done(data => {
       //     console.log('jquery:', data)

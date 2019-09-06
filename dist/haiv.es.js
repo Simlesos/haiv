@@ -145,10 +145,21 @@ class XhrRequest {
         this.options = options;
         this.xhr = xhr;
         this._requestId = `Xhr:${guid()}`;
+        this.headers = {};
+        this.addOptionsHeader();
     }
-    addHeader() {
+    addHeader(key, val) {
+        this.headers[key] = val;
+    }
+    addOptionsHeader() {
         this.options.headers.forEach(([key, val]) => {
-            this.xhr.setRequestHeader(key, val);
+            this.addHeader(key, val);
+        });
+    }
+    setRequestHeader(originSetRequestHeader) {
+        Object.keys(this.headers).forEach(key => {
+            const val = this.headers[key];
+            originSetRequestHeader.apply(this.xhr, [key, val]);
         });
     }
 }
@@ -197,18 +208,19 @@ class Network extends Emitter {
         const originSetRequestHeader = (this._originSetRequestHeader =
             winXhrProto.setRequestHeader);
         const self = this;
+        let xhrRequest;
         winXhrProto.open = function () {
             const xhr = this;
             xhr.addEventListener('readystatechange', function () {
             });
             originOpen.apply(this, arguments);
+            xhrRequest = new XhrRequest(self.options, this);
         };
         winXhrProto.setRequestHeader = function (name, value) {
-            originSetRequestHeader.apply(this, [name, value]);
+            xhrRequest.addHeader(name, value);
         };
         winXhrProto.send = function () {
-            const request = new XhrRequest(self.options, this);
-            request.addHeader();
+            xhrRequest.setRequestHeader(originSetRequestHeader);
             originSend.apply(this, arguments);
         };
     }

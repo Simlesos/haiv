@@ -46,6 +46,8 @@ export default class Network extends Emitter {
 
     const self = this
 
+    let xhrRequest: XhrRequest
+
     winXhrProto.open = function() {
       const xhr = this
       xhr.addEventListener('readystatechange', function() {
@@ -54,15 +56,15 @@ export default class Network extends Emitter {
 
       // @ts-ignore
       originOpen.apply(this, arguments)
+      xhrRequest = new XhrRequest(self.options, this)
     }
 
     winXhrProto.setRequestHeader = function(name: string, value: string) {
-      originSetRequestHeader.apply(this, [name, value])
+      xhrRequest.addHeader(name, value)
     }
 
     winXhrProto.send = function() {
-      const request = new XhrRequest(self.options, this)
-      request.addHeader()
+      xhrRequest.setRequestHeader(originSetRequestHeader)
       // @ts-ignore
       originSend.apply(this, arguments)
     }

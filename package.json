@@ -1,9 +1,9 @@
 {
   "name": "haiv",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/exercise-dto.js",
-  "module": "dist/exercise-dto.es.js",
+  "description": "fetch & xhr interceptor",
+  "main": "dist/haiv.js",
+  "module": "dist/haiv.es.js",
   "typings": "lib/index.d.ts",
   "files": [
     "dist",

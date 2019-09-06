@@ -7,8 +7,9 @@ import {
   IXHRSetRequestHeader,
 } from '../interface'
 import Emitter from '../lib/emitter'
-
-export type IListenerKey = 'request'
+import FetchRequest from './fetchRequest'
+import XhrRequest from './xhrRequest'
+import { getConfig, setConfig, DEFAULT_APP_ID } from '../lib/config'
 
 export default class Network extends Emitter {
   private readonly _isFetchSupported: boolean
@@ -16,16 +17,23 @@ export default class Network extends Emitter {
   private _originSend: IXHRSend | undefined
   private _originOpen: IXHROpen | undefined
   private _originSetRequestHeader: IXHRSetRequestHeader | undefined
+  private options: IOptions
 
-  constructor(private options: IOptions) {
+  constructor(config: Partial<IOptions>) {
     super()
+    setConfig(config)
+    this.options = getConfig()
+
+    if (this.options.appId === DEFAULT_APP_ID) {
+      throw new Error(`appId must be required`)
+    }
     this._isFetchSupported = false
     if (window.__YCNETWORK__) {
       throw new Error(`Network global initialization only once`)
     }
     if (window.fetch) this._isFetchSupported = isNative(window.fetch)
-    if (options.overrideFetch) this.overrideFetch()
-    if (options.overrideXhr) this.overrideXhr()
+    if (this.options.overrideFetch) this.overrideFetch()
+    if (this.options.overrideXhr) this.overrideXhr()
     window.__YCNETWORK__ = this
   }
 
@@ -36,13 +44,16 @@ export default class Network extends Emitter {
     const originSetRequestHeader = (this._originSetRequestHeader =
       winXhrProto.setRequestHeader)
 
+    const self = this
+
     winXhrProto.open = function() {
       const xhr = this
       xhr.addEventListener('readystatechange', function() {
-        // TODO: 可以做一些事件上报或者日志
+        // TODO: 可以做一些日志
       })
 
-      originOpen.apply(this, args)
+      // @ts-ignore
+      originOpen.apply(this, arguments)
     }
 
     winXhrProto.setRequestHeader = function(name: string, value: string) {
@@ -50,6 +61,8 @@ export default class Network extends Emitter {
     }
 
     winXhrProto.send = function() {
+      const request = new XhrRequest(self.options, this)
+      request.addHeader()
       // @ts-ignore
       originSend.apply(this, arguments)
     }
@@ -58,9 +71,10 @@ export default class Network extends Emitter {
   private overrideFetch() {
     if (!this._isFetchSupported) return
     const originFetch = (this._originFetch = window.fetch)
+    const self = this
     window.fetch = function(input: RequestInfo, init?: RequestInit) {
-      // 处理参数
-      return originFetch(input, init)
+      const req = new FetchRequest(self.options, input, init)
+      return req.request(originFetch)
     }
   }
 

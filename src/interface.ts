@@ -11,8 +11,7 @@ export type IHttpMethod =
 
 export interface IOptions {
   appId: string
-  header: HeadersInit | null
-  search: { [key: string]: number | string | null | undefined | boolean } | null
+  headers: Array<[string, string]>
   signature: boolean
   overrideFetch: boolean
   overrideXhr: boolean

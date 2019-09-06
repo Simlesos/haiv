@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>example</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="../dist/haiv.umd.js"></script>
+
+    <script>
+
+      const netword = new Network.default({ appId: 'test', headers: [
+          ['foo', 'bar'],
+              ['Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWQyMzVjMjdjYTIzNDJkNzI5NjQyMSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNTY3NzQ0NjUwLCJleHAiOjE1NzAzMzY2NTB9.FBaeGDGoOvagCXHRL_zfV4YZsUPsWXSyXFVl-CD4LtU']
+      ] })
+
+      const getMe = 'https://api-test.yangcong345.com/me'
+
+      // axios.get(
+      //  getMe
+      // ).then(data => {
+      //     console.log('axios:', data.data)
+      // })
+
+      fetch(getMe).then(data => {
+          console.log('fetch:', data.data)
+      })
+
+      // $.ajax({ url: getMe}).done(data => {
+      //     console.log('jquery:', data)
+      // })
+      //
+      // var xhr = new XMLHttpRequest()
+      // xhr.open('GET', getMe, true)
+      // xhr.onreadystatechange = function () {
+      //     if (xhr.readyState === 200) {
+      //         console.log('xhr:', xhr.responseText)
+      //     }
+      // }
+      // xhr.send(null)
+
+    </script>
+  </body>
+</html>

@@ -43,7 +43,7 @@ export default {
     },
     {
       format: 'umd',
-      name: 'ExerciseDto',
+      name: 'Network',
       file: distPathGen(`${pkg.name}.umd.js`),
       sourcemap: true,
     },

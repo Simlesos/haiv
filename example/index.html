@@ -10,43 +10,71 @@
     <script src="../dist/haiv.umd.js"></script>
 
     <script>
-
-      const netword = new Network.default({ appId: 'test', headers: [
+      const netword = new Network.default({
+        appId: 'test',
+        headers: [
           ['foo', 'bar'],
-              ['Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWQyMzVjMjdjYTIzNDJkNzI5NjQyMSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNTY3NzQ0NjUwLCJleHAiOjE1NzAzMzY2NTB9.FBaeGDGoOvagCXHRL_zfV4YZsUPsWXSyXFVl-CD4LtU']
-      ] })
-
-      const getMe = 'https://api-test.yangcong345.com/me'
-
-      axios.get(
-       getMe,
-          {
-              headers: {
-                  foo: 'aaaa'
-              }
-
-          }
-      ).then(data => {
-          console.log('axios:', data.data)
+          [
+            'Authorization',
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWQyMzVjMjdjYTIzNDJkNzI5NjQyMSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNTY3NzQ0NjUwLCJleHAiOjE1NzAzMzY2NTB9.FBaeGDGoOvagCXHRL_zfV4YZsUPsWXSyXFVl-CD4LtU',
+          ],
+        ],
       })
 
-      // fetch(getMe).then(data => {
-      //     console.log('fetch:', data.data)
+      const getMe = 'https://api-test.yangcong345.com/me?param=1'
+      const body = {
+        key1: 1,
+        key2: [1, 2],
+        key3: { k1: 1 },
+        isA: true,
+        number: 1.222,
+      }
+
+      // axios
+      //   .post(getMe, body, {
+      //     headers: {
+      //       foo: 'aaaa',
+      //       needSign: 'y',
+      //     },
+      //   })
+      //   .then(data => {
+      //     console.log('axios:', data.data)
+      //   })
+
+      fetch(getMe, {
+        method: 'POST',
+        body: body,
+          headers: { needSign: 'y' }
+      }).then(data => {
+        console.log('fetch:', data.data)
+      })
+
+      // $.ajax({
+      //     method: 'POST',
+      //     url: getMe,
+      //     data: JSON.stringify(body),
+      //     contentType: "application/json",
+      //     headers: { needSign: 'y' },
+      //     success: function (data) {
+      //         console.log(data)
+      //     }
       // })
 
-      // $.ajax({ url: getMe}).done(data => {
-      //     console.log('jquery:', data)
-      // })
-      //
       // var xhr = new XMLHttpRequest()
       // xhr.open('GET', getMe, true)
+      // xhr.setRequestHeader('needSign', 'y')
       // xhr.onreadystatechange = function () {
       //     if (xhr.readyState === 200) {
       //         console.log('xhr:', xhr.responseText)
       //     }
       // }
-      // xhr.send(null)
-
+      // xhr.send({
+      //     key1: 1,
+      //     key2: [1, 2],
+      //     key3: { k1: 1 },
+      //     isA: true,
+      //     number: 1.222
+      // })
     </script>
   </body>
 </html>

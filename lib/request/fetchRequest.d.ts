@@ -9,6 +9,10 @@ export default class FetchRequest {
     input: RequestInfo,
     init?: RequestInit | undefined
   )
+  setSign(url: string, body: any): void
+  needSign(
+    headers: string[][] | Headers | Record<string, string> | undefined
+  ): boolean
   private genRequestByObject
   private genRequestByString
   request(originFetch: IFetchFunction): Promise<Response>

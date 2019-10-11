@@ -6,8 +6,16 @@ export default class XhrRequest {
   headers: {
     [key: string]: string
   }
-  constructor(options: IOptions, xhr: XMLHttpRequest)
+  url: string
+  method: string
+  constructor(
+    method: string,
+    url: string,
+    options: IOptions,
+    xhr: XMLHttpRequest
+  )
   addHeader(key: string, val: string): void
+  sign(body: object | string): void
   private addOptionsHeader
   setRequestHeader(originSetRequestHeader: IXHRSetRequestHeader): void
 }

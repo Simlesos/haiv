@@ -32,6 +32,19 @@ export function isNil(v: any) {
   return v === null || v === undefined
 }
 
+export function isFinite(numStr: string) {
+  if (numStr === '0') return true
+  return Number.isFinite(Number(numStr))
+}
+
+export function toBoolean(value: any): boolean {
+  return value != null && `${value}` !== 'false'
+}
+
+export function isPlainObject(value: any) {
+  return toBoolean(value) && value.constructor.name === 'Object'
+}
+
 export function fullUrl(url: string): IUrl {
   let link = document.createElement('a')
   link.href = url

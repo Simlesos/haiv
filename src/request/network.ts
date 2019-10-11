@@ -1,4 +1,4 @@
-import { isNative } from '../lib/utils'
+import { isNative, isPlainObject } from '../lib/utils'
 import {
   IFetchFunction,
   IOptions,
@@ -48,7 +48,7 @@ export default class Network extends Emitter {
 
     let xhrRequest: XhrRequest
 
-    winXhrProto.open = function() {
+    winXhrProto.open = function(method: string, url: string) {
       const xhr = this
       xhr.addEventListener('readystatechange', function() {
         // TODO: 可以做一些日志
@@ -56,17 +56,20 @@ export default class Network extends Emitter {
 
       // @ts-ignore
       originOpen.apply(this, arguments)
-      xhrRequest = new XhrRequest(self.options, this)
+      xhrRequest = new XhrRequest(method, url, self.options, this)
     }
 
     winXhrProto.setRequestHeader = function(name: string, value: string) {
       xhrRequest.addHeader(name, value)
     }
 
-    winXhrProto.send = function() {
+    winXhrProto.send = function(body) {
+      if (typeof body === 'string' || isPlainObject(body)) {
+        // @ts-ignore
+        xhrRequest.sign(body)
+      }
       xhrRequest.setRequestHeader(originSetRequestHeader)
-      // @ts-ignore
-      originSend.apply(this, arguments)
+      originSend.call(this, body)
     }
   }
 

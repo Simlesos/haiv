@@ -23,6 +23,23 @@
   function isNil(v) {
       return v === null || v === undefined;
   }
+  function toBoolean(value) {
+      return value != null && `${value}` !== 'false';
+  }
+  function isPlainObject(value) {
+      return toBoolean(value) && value.constructor.name === 'Object';
+  }
+  function fullUrl(url) {
+      let link = document.createElement('a');
+      link.href = url;
+      return {
+          protocol: link.protocol,
+          host: link.host,
+          pathname: link.pathname,
+          search: link.search,
+          hash: link.hash,
+      };
+  }
   function toSrc(fn) {
       const fnToStr = Function.prototype.toString;
       if (isNil(fn))
@@ -105,6 +122,91 @@
       return t;
   }
 
+  const APP_KEY = '54F89FB7-8E80-47A3-AD1A-9C60F17327FB';
+  function sign(signParam) {
+      const timestamp = Date.now().toString();
+      const { url, clientChannel = '', clientType = '', clientVersion = '', device = '', } = signParam;
+      const urlMeta = fullUrl(url);
+      const api = getApiField(urlMeta);
+      const query = getQueryField(urlMeta);
+      const body = getBodyField(signParam.body);
+      const signObj = [
+          ['api', api],
+          ['client-channel', clientChannel],
+          ['client-type', clientType],
+          ['client-version', clientVersion],
+          ['device', device],
+          ['timestamp', timestamp],
+      ];
+      return (`${APP_KEY}:` +
+          [
+              ...signObj.map(([key, value]) => {
+                  return `${key}=${value}`;
+              }),
+              query,
+              body,
+          ].join('&'));
+  }
+  function getApiField(urlMeta) {
+      return urlMeta.pathname;
+  }
+  function sortStr(a, b) {
+      const aStart = a[0];
+      const bStart = b[0];
+      if (aStart < bStart)
+          return -1;
+      if (aStart > bStart)
+          return 1;
+      return 0;
+  }
+  function objectFormat() {
+      return '';
+  }
+  function arrayFormat(array) {
+      return array
+          .filter(x => x && !isObject(x))
+          .map(x => {
+          if (isFinite(x)) {
+              return parseInt(x, 10);
+          }
+          return `${x}`;
+      })
+          .filter(Boolean)
+          .join(',');
+  }
+  function getQueryField(urlMeta) {
+      return urlMeta.search
+          .replace('?', '')
+          .split('&')
+          .sort(sortStr)
+          .join('&');
+  }
+  function getBodyField(body) {
+      if (isArray(body)) {
+          return arrayFormat(body);
+      }
+      return Object.keys(body)
+          .sort(sortStr)
+          .map(key => {
+          let val = body[key];
+          if (isArray(val)) {
+              val = arrayFormat(val);
+          }
+          else if (isObject(val)) {
+              val = objectFormat();
+          }
+          else if (typeof val === 'boolean') {
+              val = `${val}`;
+          }
+          else if (isFinite(val)) {
+              val = parseInt(val, 10);
+          }
+          return val !== '' ? `${key}=${val}` : '';
+      })
+          .filter(Boolean)
+          .join('&');
+  }
+
   class FetchRequest {
       constructor(options, input, init) {
           this.options = options;
@@ -112,8 +214,36 @@
           this.init = init;
           this._requestId = `Req:${guid()}`;
       }
+      setSign(url, body) {
+          let signBody = {};
+          if (typeof body === 'object') {
+              signBody = body;
+              let signVal = sign({ url, body: signBody });
+              console.log('sign', signVal);
+              this.options.headers.push(['sign', signVal]);
+          }
+      }
+      needSign(headers) {
+          if (!headers)
+              return false;
+          const optionHas = this.options.headers.some(([key, val]) => key === 'needSign' && val === 'y');
+          let headersHas = false;
+          if (headers instanceof Headers) {
+              headersHas = headers.get('needSing') === 'y';
+          }
+          else if (isArray(headers)) {
+              headersHas = headers.some(([key, val]) => key === 'needSign' && val === 'y');
+          }
+          else {
+              headersHas = headers['needSign'] === 'y';
+          }
+          return optionHas || headersHas;
+      }
       genRequestByObject(input) {
           const { url } = input, options = __rest(input, ["url"]);
+          if (this.needSign(options.headers)) {
+              this.setSign(url, options.body);
+          }
           this.options.headers.forEach(([key, val]) => {
               options.headers.set(key, val);
           });
@@ -121,6 +251,9 @@
       }
       genRequestByString(input, init = {}) {
           const options = __rest(init, []);
+          if (this.needSign(options.headers)) {
+              this.setSign(input, options.body);
+          }
           this.options.headers.forEach(([key, val]) => {
               if (options.headers instanceof Headers) {
                   options.headers.set(key, val);
@@ -142,20 +275,32 @@
           else {
               request = this.genRequestByString(this.input, this.init);
           }
+          console.log('fetchBody3', request.body);
           return originFetch(request);
       }
   }
 
   class XhrRequest {
-      constructor(options, xhr) {
+      constructor(method, url, options, xhr) {
           this.options = options;
           this.xhr = xhr;
           this._requestId = `Xhr:${guid()}`;
+          this.method = method;
+          this.url = url;
           this.headers = {};
           this.addOptionsHeader();
       }
       addHeader(key, val) {
           this.headers[key] = val;
+      }
+      sign(body) {
+          if (typeof body === 'string') {
+              body = JSON.parse(body);
+          }
+          if (this.headers['needSign'] === 'y') {
+              this.headers['sign'] = sign({ url: this.url, body });
+              console.log('sign:', this.headers['sign']);
+          }
       }
       addOptionsHeader() {
           this.options.headers.forEach(([key, val]) => {
@@ -216,19 +361,22 @@
               winXhrProto.setRequestHeader);
           const self = this;
           let xhrRequest;
-          winXhrProto.open = function () {
+          winXhrProto.open = function (method, url) {
               const xhr = this;
               xhr.addEventListener('readystatechange', function () {
               });
               originOpen.apply(this, arguments);
-              xhrRequest = new XhrRequest(self.options, this);
+              xhrRequest = new XhrRequest(method, url, self.options, this);
           };
           winXhrProto.setRequestHeader = function (name, value) {
               xhrRequest.addHeader(name, value);
           };
-          winXhrProto.send = function () {
+          winXhrProto.send = function (body) {
+              if (typeof body === 'string' || isPlainObject(body)) {
+                  xhrRequest.sign(body);
+              }
               xhrRequest.setRequestHeader(originSetRequestHeader);
-              originSend.apply(this, arguments);
+              originSend.call(this, body);
           };
       }
       overrideFetch() {
@@ -260,7 +408,7 @@
       }
   }
 
-  const VERSION = '1.1.2';
+  const VERSION = '1.1.3';
 
   exports.VERSION = VERSION;
   exports.default = Network;

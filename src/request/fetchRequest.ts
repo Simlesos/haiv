@@ -1,5 +1,6 @@
 import { IFetchFunction, IOptions } from '../interface'
 import { guid, isArray } from '../lib/utils'
+import { sign } from '../lib/sign'
 
 export default class FetchRequest {
   _requestId: string
@@ -12,16 +13,56 @@ export default class FetchRequest {
     this._requestId = `Req:${guid()}`
   }
 
+  setSign(url: string, body: any) {
+    let signBody = {}
+    if (typeof body === 'object') {
+      // @ts-ignore
+      signBody = body
+      let signVal = sign({ url, body: signBody })
+      console.log('sign', signVal)
+      this.options.headers.push(['sign', signVal])
+    }
+  }
+
+  needSign(headers: string[][] | Headers | Record<string, string> | undefined) {
+    if (!headers) return false
+    const optionHas = this.options.headers.some(
+      ([key, val]) => key === 'needSign' && val === 'y'
+    )
+    let headersHas = false
+    if (headers instanceof Headers) {
+      headersHas = headers.get('needSing') === 'y'
+    } else if (isArray(headers)) {
+      headersHas = headers.some(
+        ([key, val]) => key === 'needSign' && val === 'y'
+      )
+    } else {
+      headersHas = headers['needSign'] === 'y'
+    }
+    return optionHas || headersHas
+  }
+
   private genRequestByObject(input: Request) {
     const { url, ...options } = input
+
+    if (this.needSign(options.headers)) {
+      this.setSign(url, options.body)
+    }
+
     this.options.headers.forEach(([key, val]) => {
       options.headers.set(key, val)
     })
+
     return new Request(url, options)
   }
 
   private genRequestByString(input: string, init: RequestInit = {}) {
     const { ...options } = init
+
+    if (this.needSign(options.headers)) {
+      this.setSign(input, options.body)
+    }
+
     this.options.headers.forEach(([key, val]) => {
       if (options.headers instanceof Headers) {
         options.headers.set(key, val)
@@ -42,6 +83,7 @@ export default class FetchRequest {
       request = this.genRequestByString(this.input, this.init)
     }
 
+    console.log('fetchBody3', request.body)
     return originFetch(request)
   }
 }

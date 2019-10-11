@@ -1245,11 +1245,7 @@ class FetchRequest {
         if (typeof body === 'object') {
             signBody = body;
             let signVal = sign({ url, body: signBody });
-            console.log('sign', signVal);
-            this.options.headers.push(['sign', signVal.md5]);
-            this.options.headers.push(['timestamp', signVal.timestamp]);
-            this.options.headers.push(['originsign', signVal.sign]);
-            this.options.headers.push(['appid', APP_KEY]);
+            this.options.headers.push(['sign', signVal.md5], ['timestamp', signVal.timestamp], ['originsign', signVal.sign], ['appid', APP_KEY]);
         }
     }
     needSign(headers) {
@@ -1304,7 +1300,6 @@ class FetchRequest {
         else {
             request = this.genRequestByString(this.input, this.init);
         }
-        console.log('fetchBody3', request.body);
         return originFetch(request);
     }
 }
@@ -1330,9 +1325,7 @@ class XhrRequest {
             const signVal = sign({ url: this.url, body });
             this.headers['sign'] = signVal.md5;
             this.headers['timestamp'] = signVal.timestamp;
-            this.headers['originsign'] = signVal.sign;
             this.headers['appid'] = APP_KEY;
-            console.log('sign:', this.headers['sign']);
         }
     }
     addOptionsHeader() {

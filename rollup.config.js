@@ -21,7 +21,6 @@ export default {
       typescript: require('typescript'),
       useTsconfigDeclarationDir: true,
     }),
-
     json(),
 
     commonjs({

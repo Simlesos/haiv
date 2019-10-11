@@ -16,7 +16,7 @@
           ['foo', 'bar'],
           [
             'Authorization',
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWQyMzVjMjdjYTIzNDJkNzI5NjQyMSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNTY3NzQ0NjUwLCJleHAiOjE1NzAzMzY2NTB9.FBaeGDGoOvagCXHRL_zfV4YZsUPsWXSyXFVl-CD4LtU',
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWQyMzVjMjdjYTIzNDJkNzI5NjQyMSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNTcwNzgyNTAwLCJleHAiOjE1NzMzNzQ1MDB9.QEJwHMpkGTpmz4icg713YOrPOMMK9o43SqU0NVHvw28',
           ],
         ],
       })
@@ -30,6 +30,12 @@
         number: 1.222,
       }
 
+      axios
+        .post('http://10.8.17.103:8000/learn/practice?param=1', body, {
+          headers: { needSign: 'y' },
+        })
+        .then(data => console.log(data))
+
       // axios
       //   .post(getMe, body, {
       //     headers: {
@@ -41,13 +47,13 @@
       //     console.log('axios:', data.data)
       //   })
 
-      fetch(getMe, {
-        method: 'POST',
-        body: body,
-          headers: { needSign: 'y' }
-      }).then(data => {
-        console.log('fetch:', data.data)
-      })
+      // fetch(getMe, {
+      //   method: 'POST',
+      //   body: body,
+      //   headers: { needSign: 'y' },
+      // }).then(data => {
+      //   console.log('fetch:', data.data)
+      // })
 
       // $.ajax({
       //     method: 'POST',

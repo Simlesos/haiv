@@ -1,6 +1,6 @@
 import { guid } from '../lib/utils'
 import { IOptions, IXHRSetRequestHeader } from '../interface'
-import { sign } from '../lib/sign'
+import { APP_KEY, sign } from '../lib/sign'
 
 export default class XhrRequest {
   _requestId: string
@@ -29,8 +29,10 @@ export default class XhrRequest {
       body = JSON.parse(body) as object
     }
     if (this.headers['needSign'] === 'y') {
-      this.headers['sign'] = sign({ url: this.url, body })
-      console.log('sign:', this.headers['sign'])
+      const signVal = sign({ url: this.url, body })
+      this.headers['sign'] = signVal.md5
+      this.headers['timestamp'] = signVal.timestamp
+      this.headers['appid'] = APP_KEY
     }
   }
 

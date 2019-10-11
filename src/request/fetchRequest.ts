@@ -1,6 +1,6 @@
 import { IFetchFunction, IOptions } from '../interface'
 import { guid, isArray } from '../lib/utils'
-import { sign } from '../lib/sign'
+import { APP_KEY, sign } from '../lib/sign'
 
 export default class FetchRequest {
   _requestId: string
@@ -19,8 +19,12 @@ export default class FetchRequest {
       // @ts-ignore
       signBody = body
       let signVal = sign({ url, body: signBody })
-      console.log('sign', signVal)
-      this.options.headers.push(['sign', signVal])
+      this.options.headers.push(
+        ['sign', signVal.md5],
+        ['timestamp', signVal.timestamp],
+        ['originsign', signVal.sign],
+        ['appid', APP_KEY]
+      )
     }
   }
 
@@ -83,7 +87,6 @@ export default class FetchRequest {
       request = this.genRequestByString(this.input, this.init)
     }
 
-    console.log('fetchBody3', request.body)
     return originFetch(request)
   }
 }

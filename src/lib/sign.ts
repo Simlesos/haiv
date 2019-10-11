@@ -1,7 +1,8 @@
+import md5 from 'crypto-js/md5'
 import { fullUrl, isArray, isObject } from './utils'
 import { IUrl } from '../interface'
 
-const APP_KEY = '54F89FB7-8E80-47A3-AD1A-9C60F17327FB'
+export const APP_KEY = 'CB3141D6-FE9E-46DF-ABD9-8434AC8DBD59'
 
 export interface ISignParam {
   url: string
@@ -34,7 +35,7 @@ export function sign(signParam: ISignParam) {
     ['device', device],
     ['timestamp', timestamp],
   ]
-  return (
+  const sign =
     `${APP_KEY}:` +
     [
       ...signObj.map(([key, value]) => {
@@ -43,7 +44,12 @@ export function sign(signParam: ISignParam) {
       query,
       body,
     ].join('&')
-  )
+
+  return {
+    sign: sign,
+    timestamp,
+    md5: md5(sign),
+  }
 }
 
 function getApiField(urlMeta: IUrl) {
